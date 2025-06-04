@@ -3,12 +3,6 @@
 async function calenderRollingYearsDate() {
 
     const currentDate = new Date();
-    /*const calenderyearDate = new Date(currentDate);
-    calenderyearDate.setFullYear(currentDate.getFullYear() - 6);
-    calenderyearDate.setMonth(11); 
-    calenderyearDate.setDate(31);
-    //const dateSixCalenderYearsBefore = formatDateForOracle(calenderyearDate);
-    //console.log(' 6 calender years ago date is:', dateSixCalenderYearsBefore);*/
     const rollingyearDate = new Date(currentDate);
     rollingyearDate.setFullYear(currentDate.getFullYear() - 2);
     //const dateTwoRollingYearBefore = formatDateForOracle(rollingyearDate);
@@ -16,20 +10,24 @@ async function calenderRollingYearsDate() {
 
     const playuserdate = new Date(currentDate);
     playuserdate.setMonth(currentDate.getMonth() - 13);
-    //const playerUserDateToUpdate = formatDateForOracle(playuserdate);
-    //console.log('13 months ago date is :',playerUserDateToUpdate);
     //playeuser days= 395 days
     // real user calenderdays= 2192 days 
-    const userlastactivitybackdate= new Date(currentDate.getTime() - (397 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
-    //userlastactivitybackdate.setDate(currentDate.getTime()-(395*24*60*60*1000));
-    console.log('Current date is :',currentDate);
-    console.log('user lastactivity back date is :',userlastactivitybackdate);
+    //below is playuser last activity time back dated days
+    const playuserlastactivitybackdate= new Date(currentDate.getTime() - (397 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
 
+    //below is real user activity time back dated days
+    const realuserlastactivitybackdate= new Date(currentDate.getTime() - (2194 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
+
+    //below is updating eligibility time back dated days
+    var backdatedeligibilityTime = new Date(currentDate.getTime() - 70 * 24 * 60 * 60 * 1000);
+
+    const sysdateeligibilitydate= new Date();
     const pastdates=[];
    // pastdates.push(calenderyearDate);
-    pastdates.push(rollingyearDate);
-    pastdates.push(playuserdate);
-    pastdates.push(userlastactivitybackdate);
+    pastdates.push(sysdateeligibilitydate);
+    pastdates.push(realuserlastactivitybackdate);
+    pastdates.push(playuserlastactivitybackdate);
+    pastdates.push(backdatedeligibilityTime);
     return pastdates;
 }
 

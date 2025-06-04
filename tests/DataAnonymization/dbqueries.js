@@ -104,7 +104,7 @@ async function verifyUserAnonymizationStatus(testuserscount) {
 
 async function insertUsers(accountname,activityType,lastActivityTime) {
     const currentDate= new Date();
-    var eligibilityTime = new Date(currentDate.getTime() - 70 * 24 * 60 * 60 * 1000);
+    //var eligibilityTime = new Date(currentDate.getTime() - 70 * 24 * 60 * 60 * 1000);
     //var eligibilityTime= new Date();
     const connection=await connectDb();
     await connection.execute(

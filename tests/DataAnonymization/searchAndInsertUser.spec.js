@@ -10,22 +10,26 @@ const activityType = require('../DataAnonymization/activityType');
 const {calenderRollingYearsDate}=require('../DataAnonymization/countrylabelretension');
 
 //const userlastActivityTime = new Date('2005-05-01T09:12:44');
-var dateupdatedforfailedusers;
-let twoYeatsAgoDate;
-let userlastActivityTime;
+
+var  sysdateeligibilitydate;
+var realuserlastactivitybackdate;
+var playuserlastactivitybackdate ;
+var backdatedeligibilityTime;
 test.beforeAll(async ()=>{
     const dates= await calenderRollingYearsDate();
-     dateupdatedforfailedusers= dates[0];
-    const twoYearsAgoDate= dates[1];
-     userlastActivityTime=dates[2];
-    //console.log(' 6 calender years ago date is:', sixYearsAgoDate);
-    //console.log(' 2 rolling years years ago date is:', twoYearsAgoDate);
-    console.log(`Updating user last activity date to : ${userlastActivityTime} `);
-    console.log(`Updating last activity date for validation failed user to :${dateupdatedforfailedusers}`);
+    sysdateeligibilitydate=dates[0];
+    realuserlastactivitybackdate=dates[1];
+    playuserlastactivitybackdate=dates[2];
+    backdatedeligibilityTime= dates[3];
+
+    console.log(`Updating real user last activity date to : ${realuserlastactivitybackdate} `);
+    console.log(`Updating play user last activity date to : ${playuserlastactivitybackdate} `);
+    console.log(`Updating  user eligibility date to sysdate : ${sysdateeligibilitydate} `);
+    console.log(`Updating last activity date for validation failed user to to make eligible :${backdatedeligibilityTime}`);
 });
 
-const userCreateTime= new Date('2005-05-01T09:12:44');
-const usereligibilityTime= new Date('2024-05-01T09:12:44')
+//const userCreateTime= new Date('2005-05-01T09:12:44');
+//const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
 test('Insert users with last activity time is less than threhsold time.' , async()=>{
     let j=0;
@@ -38,7 +42,7 @@ test('Insert users with last activity time is less than threhsold time.' , async
         const user= await searchUserInTable(testUserName);
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
-            await insertUsers(testUserName,randomactivityType,userlastActivityTime);
+            await insertUsers(testUserName,randomactivityType,sysdateeligibilitydate);
         }
         j++;
 if(j>useractivitytype.length){
@@ -81,8 +85,8 @@ test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization 
         const user= await searchUserInTable(testUserName);
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
-            await insertUsers(testUserName,randomactivityType,userlastActivityTime); 
-            await updateCreateTimeInTanc(testUserName,userlastActivityTime);
+            await insertUsers(testUserName,randomactivityType,playuserlastactivitybackdate); 
+            await updateCreateTimeInTanc(testUserName,playuserlastactivitybackdate);
         }
         j++;
 if(j>=useractivitytype.length){
@@ -96,7 +100,7 @@ if(j>=useractivitytype.length){
 
 );
 //test.describe.configure({timeout:3000000});
-test.only('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
+test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
     const validationfaileduserslist= await getAnonymizationFailedUsers();
     console.log('Validation failed users list is :', validationfaileduserslist);
     for (let i=0;i<validationfaileduserslist.length;i++){
@@ -107,7 +111,7 @@ test.only('Updating Basic check failed DB Records to eligible for anonymization'
            if(user.length>0){
             const typefromresult=user[0][1];
             console.log('User activity type from result is:' ,typefromresult);
-            await updateDbForAnonymization(testUserName,usereligibilityTime);
+            await updateDbForAnonymization(testUserName,backdatedeligibilityTime);
            }
 
             //await updateDbForAnonymization(testUserName,userlastActivityTime);
