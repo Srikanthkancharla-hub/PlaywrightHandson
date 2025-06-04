@@ -1,0 +1,29 @@
+{
+  "name": "core_automation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "posttest": "allure generate allure-results --clean && allure open"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.3.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "allure-playwright": "^3.0.7",
+    "cli-table3": "^0.6.5",
+    "fast-xml-parser": "^4.5.0",
+    "mongodb": "^6.9.0",
+    "mysql": "^2.18.1",
+    "oracledb": "^6.6.0"
+  },
+  "description": ""
+}
