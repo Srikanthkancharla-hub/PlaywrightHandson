@@ -10,7 +10,7 @@ async function calenderRollingYearsDate() {
     //const dateSixCalenderYearsBefore = formatDateForOracle(calenderyearDate);
     //console.log(' 6 calender years ago date is:', dateSixCalenderYearsBefore);*/
     const rollingyearDate = new Date(currentDate);
-    rollingyearDate.setFullYear(currentDate.getFullYear() - 7);
+    rollingyearDate.setFullYear(currentDate.getFullYear() - 2);
     //const dateTwoRollingYearBefore = formatDateForOracle(rollingyearDate);
     //console.log(' 2 rolling years years ago date is:', dateTwoRollingYearBefore);
 
