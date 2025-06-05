@@ -31,7 +31,7 @@ test.beforeAll(async ()=>{
 //const userCreateTime= new Date('2005-05-01T09:12:44');
 //const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
-test.only('Insert users with last activity time as Sysdate.' , async()=>{
+test('Insert users with last activity time as Sysdate.' , async()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     let j=0;
     for(let i=0;i<insertedAccounts.length;i++){
@@ -46,7 +46,7 @@ test.only('Insert users with last activity time as Sysdate.' , async()=>{
             await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,sysdateeligibilitydate);
         }
         j++;
-if(j>useractivitytype.length){
+if(j>=useractivitytype.length){
     j=0;
 }
 
@@ -110,7 +110,7 @@ if(j>=useractivitytype.length){
 
 );
 //test.describe.configure({timeout:3000000});
-test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
+test.only('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
     const validationfaileduserslist= await getAnonymizationFailedUsers();
     console.log('Validation failed users list is :', validationfaileduserslist);
     for (let i=0;i<validationfaileduserslist.length;i++){

@@ -315,32 +315,43 @@ async function updateLastAccessedTimeInTanc(accountname,lastActivityTime){
 async function getAnonymizationFailedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(`
-        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed'
-        fetch first 10 rows only`,
+        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed' order by f_modified_time desc
+        fetch first 200 rows only`,
         [],
         {outFormat:oracledb.OUT_FORMAT_OBJECT}
     );
     //console.log('validation failed users are :',result.rows);
+    try{
     const validationfaileduserscount= result.rows.length;
     console.log('Validation failed users count is :',validationfaileduserscount);
     const anonymizationfailedusers=[];
-    for (let i=0;i<result.rows.length;i++){
-        const validationfaileduser=result.rows[i].F_ACCOUNT_NAME;
-        console.log(`Validation failed user is :${validationfaileduser}`);
-        anonymizationfailedusers.push(validationfaileduser);
-        const validationfailedusercomments=result.rows[i].F_COMMENTS;
-        console.log(`Validation failed user comments are : ${validationfailedusercomments}`);
+    if(validationfaileduserscount==0){
+        console.log(`Validation failed users count is Zer0`);
     }
+    else {
+        for (let i=0;i<result.rows.length;i++){
+            const validationfaileduser=result.rows[i].F_ACCOUNT_NAME;
+            console.log(`Validation failed user is :${validationfaileduser}`);
+            anonymizationfailedusers.push(validationfaileduser);
+            const validationfailedusercomments=result.rows[i].F_COMMENTS;
+            console.log(`Validation failed user comments are : ${validationfailedusercomments}`);
+        }
+    }
+    
     return anonymizationfailedusers;
+}
+catch(Error){
+console.log('Error in execution is :',Error);
+}
 };
 async function updateDbForAnonymization(accountname,eligibilityTime) {
     const connection= await connectDb();
     await connection.execute(
         `update t_user_anonymization_data set f_status='Eligible_for_Anonymization' ,
         f_comments='updating record again because validation is failed',
-    f_custom_1='' ,f_custom_2='',f_eligibilty_time=:eligibilityTime  
+    f_custom_1='' ,f_custom_2='',f_eligibilty_time=:eligibilityTime,f_modified_time=:modifiedTime
     where f_account_name= :accountname`,
-    {accountname,eligibilityTime},
+    {accountname,eligibilityTime,modifiedTime:now},
     {autoCommit:true}
     );
     
