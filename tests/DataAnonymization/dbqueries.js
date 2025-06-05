@@ -102,7 +102,7 @@ async function verifyUserAnonymizationStatus(testuserscount) {
 };
 
 
-async function insertUsers(accountname,activityType,lastActivityTime) {
+async function insertUsers(accountname,activityType,lastActivityTime,eligibilityTime) {
     const currentDate= new Date();
     //var eligibilityTime = new Date(currentDate.getTime() - 70 * 24 * 60 * 60 * 1000);
     //var eligibilityTime= new Date();
@@ -133,7 +133,7 @@ tanc.f_account_name_casino=tg.f_account_name_eze
 join t_jurisdiction tj on 
 tj.f_account_name=tanc.f_account_name_casino
 where tanc.f_account_name_casino not in (select f_account_name from useraccount.t_user_anonymization_data) 
-and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0 and tanc.f_status=0 and tg.f_country='MT'
+and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0 and tanc.f_status=1 and tg.f_country='MT'
 ---and tj.f_jurisdiction='GBR'
 ---and tg.f_category_id in ('25','24','17','20')
 FETCH FIRST 10 ROWS ONLY`,
@@ -230,6 +230,19 @@ async function verifyStatusInDb(accountname){
     }
     return result.rows;
  }
+ async function getUserPlayRealStatus(accountname) {
+    const connection1= await connectPpokerops();
+    const result= await connection1.execute(
+        `select f_account_name_casino,f_status from t_account_name_casino where f_account_name_casino= :accountname`,
+        {accountname},
+        {outFormat:oracledb.OUT_FORMAT_OBJECT}
+    );
+    const playerstatus=[];
+    const userplayrealstatus=result.rows[0].F_STATUS;
+    console.log(`User account stauts is : ${userplayrealstatus}`);
+    playerstatus.push(userplayrealstatus);
+    return playerstatus;
+ }
 async function updateCreateTimeInTanc(accountname,lastActivityTime){
 
     const connection1= await connectPpokerops();
@@ -249,7 +262,7 @@ async function updateCreateTimeInTanc(accountname,lastActivityTime){
         insertJurisdictionForPlayers(accountname);
     }
     
-    
+    return userplayrealstatus;
 };
 
 async function updateCreatetimeInAllTables(accountname,lastActivityTime) {
@@ -584,4 +597,4 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,
     verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
-    getAnonymizationFailedUsers};
+    getAnonymizationFailedUsers,getUserPlayRealStatus};

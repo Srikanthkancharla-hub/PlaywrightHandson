@@ -1,6 +1,6 @@
 const {test,expect}=require('@playwright/test');
 const {dbqueries, searchUserInTable, insertUsers,
-    verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,
+    verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
     updateDbForAnonymization,insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,getAnonymizationFailedUsers
 }=require('../DataAnonymization/dbqueries');
 const userslist=require('../DataAnonymization/DAUserslist');
@@ -73,20 +73,29 @@ test('Verify core validation check is failed due to last activity time is less t
 }
 );
 test.describe.configure({timeout:3000000});
-test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
+test.only('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
-    let j=0;
+    
+        let j=0;
     for(let i=0;i<insertedAccounts.length;i++){
         const testUserName=insertedAccounts[i];
         console.log('user picked is :',testUserName);
         const randomactivityType=useractivitytype[j];
         console.log('activityType picked is :',randomactivityType);
+        const playerstatus= await getUserPlayRealStatus(testUserName);
+        const userstatus=playerstatus[0];
         try{
         const user= await searchUserInTable(testUserName);
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
-            await insertUsers(testUserName,randomactivityType,playuserlastactivitybackdate); 
-            await updateCreateTimeInTanc(testUserName,playuserlastactivitybackdate);
+            if(userstatus==0){
+                await insertUsers(testUserName,randomactivityType,playuserlastactivitybackdate,backdatedeligibilityTime); 
+                await updateCreateTimeInTanc(testUserName,playuserlastactivitybackdate); 
+            } else {
+                await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,backdatedeligibilityTime); 
+                await updateCreateTimeInTanc(testUserName,realuserlastactivitybackdate);
+            }
+            
         }
         j++;
 if(j>=useractivitytype.length){
