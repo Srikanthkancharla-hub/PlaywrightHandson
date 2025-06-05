@@ -16,7 +16,7 @@ async function calenderRollingYearsDate() {
     const playuserlastactivitybackdate= new Date(currentDate.getTime() - (397 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
 
     //below is real user activity time back dated days
-    const realuserlastactivitybackdate= new Date(currentDate.getTime() - (2194 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
+    const realuserlastactivitybackdate= new Date(currentDate.getTime() - (2500 * 24 * 60 * 60 * 1000)+(14*60*60*1000));
 
     //below is updating eligibility time back dated days
     var backdatedeligibilityTime = new Date(currentDate.getTime() - 70 * 24 * 60 * 60 * 1000);

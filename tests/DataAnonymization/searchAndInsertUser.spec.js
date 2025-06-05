@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {dbqueries, searchUserInTable, insertUsers,
     verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
-    updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers
+    updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers,insertJurisdictionForPlayers
 }=require('../DataAnonymization/dbqueries');
 const userslist=require('../DataAnonymization/DAUserslist');
 const useractivitytype=require('../DataAnonymization/activityType');
@@ -31,7 +31,7 @@ test.beforeAll(async ()=>{
 //const userCreateTime= new Date('2005-05-01T09:12:44');
 //const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
-test('Insert users with last activity time as Sysdate.' , async()=>{
+test.only('Insert users with last activity time as Sysdate.' , async()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     let j=0;
     for(let i=0;i<insertedAccounts.length;i++){
@@ -44,6 +44,7 @@ test('Insert users with last activity time as Sysdate.' , async()=>{
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
             await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,sysdateeligibilitydate);
+            await insertJurisdictionForPlayers(testUserName);
         }
         j++;
 if(j>=useractivitytype.length){
@@ -60,8 +61,9 @@ if(j>=useractivitytype.length){
 
 // To make this use case as success insert record with last activity time as sysdate. 
 test('Verify core validation check is failed due to last activity time is less than threshold time', async ()=>{
-    for(let i=0;i<userslist.length;i++){
-        const testUserName=userslist[i];
+    const insertedAccounts = await insertUsersNotInTableFromTANC();
+    for(let i=0;i<insertedAccounts.length;i++){
+        const testUserName=insertedAccounts[i];
         console.log(`user picked to verify status in db is ${testUserName}`);
         try{
             await verifyStatusInDb(testUserName);
@@ -110,7 +112,7 @@ if(j>=useractivitytype.length){
 
 );
 //test.describe.configure({timeout:3000000});
-test.only('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
+test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
     const validationfaileduserslist= await getAnonymizationFailedUsers();
     console.log('Validation failed users list is :', validationfaileduserslist);
     for (let i=0;i<validationfaileduserslist.length;i++){
@@ -121,10 +123,15 @@ test.only('Updating Basic check failed DB Records to eligible for anonymization'
            if(user.length>0){
             const typefromresult=user[0][1];
             console.log('User activity type from result is:' ,typefromresult);
-            await updateDbForAnonymization(testUserName,backdatedeligibilityTime);
+            const playerstatus= await getUserPlayRealStatus(testUserName);
+            const userstatus=playerstatus[0];
+            if(userstatus==0){
+                await updateDbForAnonymization(testUserName,playuserlastactivitybackdate,backdatedeligibilityTime);
+            }else {
+                await updateDbForAnonymization(testUserName,realuserlastactivitybackdate,backdatedeligibilityTime);
+            }
+            
            }
-
-            //await updateDbForAnonymization(testUserName,userlastActivityTime);
         }catch(error){
             console.error('Error is :', error);
         }

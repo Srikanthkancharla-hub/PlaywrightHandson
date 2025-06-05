@@ -133,9 +133,9 @@ tanc.f_account_name_casino=tg.f_account_name_eze
 join t_jurisdiction tj on 
 tj.f_account_name=tanc.f_account_name_casino
 where tanc.f_account_name_casino not in (select f_account_name from useraccount.t_user_anonymization_data) 
-and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0 and tanc.f_status=1 and tg.f_country='MT'
+and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0  and tg.f_country='MT'
 ---and tj.f_jurisdiction='GBR'
----and tg.f_category_id in ('25','24','17','20')
+---and tg.f_category_id not in ('25','24','17','20')
 FETCH FIRST 10 ROWS ONLY`,
  [],
  {outFormat:oracledb.OUT_FORMAT_OBJECT}
@@ -344,14 +344,15 @@ catch(Error){
 console.log('Error in execution is :',Error);
 }
 };
-async function updateDbForAnonymization(accountname,eligibilityTime) {
+async function updateDbForAnonymization(accountname,lastActivityTime,eligibilityTime) {
     const connection= await connectDb();
     await connection.execute(
         `update t_user_anonymization_data set f_status='Eligible_for_Anonymization' ,
         f_comments='updating record again because validation is failed',
-    f_custom_1='' ,f_custom_2='',f_eligibilty_time=:eligibilityTime,f_modified_time=:modifiedTime
+    f_custom_1='' ,f_custom_2='',f_eligibilty_time=:eligibilityTime,f_modified_time=:modifiedTime,
+    f_last_activity_time=:lastActivityTime
     where f_account_name= :accountname`,
-    {accountname,eligibilityTime,modifiedTime:now},
+    {accountname,lastActivityTime,eligibilityTime,modifiedTime:now},
     {autoCommit:true}
     );
     
