@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {dbqueries, searchUserInTable, insertUsers,
     verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
-    updateDbForAnonymization,insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,getAnonymizationFailedUsers
+    updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers
 }=require('../DataAnonymization/dbqueries');
 const userslist=require('../DataAnonymization/DAUserslist');
 const useractivitytype=require('../DataAnonymization/activityType');
@@ -31,10 +31,11 @@ test.beforeAll(async ()=>{
 //const userCreateTime= new Date('2005-05-01T09:12:44');
 //const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
-test('Insert users with last activity time is less than threhsold time.' , async()=>{
+test.only('Insert users with last activity time as Sysdate.' , async()=>{
+    const insertedAccounts = await insertUsersNotInTableFromTANC();
     let j=0;
-    for(let i=0;i<userslist.length;i++){
-        const testUserName=userslist[i];
+    for(let i=0;i<insertedAccounts.length;i++){
+        const testUserName=insertedAccounts[i];
         console.log('user picked is :',testUserName);
         const randomactivityType=useractivitytype[j];
         console.log('activityType picked is :',randomactivityType);
@@ -42,7 +43,7 @@ test('Insert users with last activity time is less than threhsold time.' , async
         const user= await searchUserInTable(testUserName);
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
-            await insertUsers(testUserName,randomactivityType,sysdateeligibilitydate);
+            await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,sysdateeligibilitydate);
         }
         j++;
 if(j>useractivitytype.length){
@@ -73,7 +74,7 @@ test('Verify core validation check is failed due to last activity time is less t
 }
 );
 test.describe.configure({timeout:3000000});
-test.only('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
+test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     
         let j=0;
@@ -134,19 +135,3 @@ test('Updating Basic check failed DB Records to eligible for anonymization', asy
 
 );
 
-test ('updating jurisdiction for players having null value in DB ',  async ()=>{
-    for(let i=0;i<userslist.length;i++){
-        const testUserName=userslist[i];
-        console.log(`user picked to verify status in db is ${testUserName}`);
-        try{
-            await insertJurisdictionForPlayers(testUserName);
-
-        }
-        catch(error){
-            console.error('Error is :', error);
-        }
-    }
-
-}
-
-)
