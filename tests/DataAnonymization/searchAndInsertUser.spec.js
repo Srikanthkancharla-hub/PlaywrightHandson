@@ -4,10 +4,8 @@ const {dbqueries, searchUserInTable, insertUsers,
     updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers,insertJurisdictionForPlayers
     ,UpdatedusercategorytoNormal
 }=require('../DataAnonymization/dbqueries');
-const userslist=require('../DataAnonymization/DAUserslist');
 const useractivitytype=require('../DataAnonymization/activityType');
 const { connectDb } = require('../../Utils/dbconnection');
-const activityType = require('../DataAnonymization/activityType');
 const {calenderRollingYearsDate}=require('../DataAnonymization/countrylabelretension');
 
 //const userlastActivityTime = new Date('2005-05-01T09:12:44');
@@ -116,6 +114,7 @@ if(j>=useractivitytype.length){
     }catch(error){
         console.log('Error is :', error);
     }
+
 }
 }
 

@@ -6,7 +6,33 @@ const oracledb = require('oracledb');
 
 const now = new Date();
 
-
+async function getAnonymizationCompletedUsers() {
+    const connection= await connectDb();
+    const result= await connection.execute(
+        `select * from t_user_anonymization_data where f_status='Anonymization_Complete'  and TRUNC(f_insertion_time)= TRUNC(sysdate-1)
+        fetch first 20 rows only`,
+        [],
+        {outFormat:oracledb.OUT_FORMAT_OBJECT}
+    );
+    const anonymizationcompletedusers=[];
+    const anonymizationcompleteduserscount=result.rows.length;
+    for(let i=0;i<anonymizationcompleteduserscount;i++){
+        const anonydoneuser=result.rows[i].F_ACCOUNT_NAME;
+        console.log(`Anonymization Completed user is : ${anonydoneuser}`);
+        const anonydonestatus=result.rows[i].F_STATUS;
+        console.log(`Anonymization Completed user status is : ${anonydonestatus}`);
+        const anonydonecomments=result.rows[i].F_COMMENTS;
+        console.log(`Anonymization Completed user comments are : ${anonydonecomments}`);
+        const anonydonecustom2=result.rows[i].F_CUSTOM_2;
+        console.log(`Anonymization Completed user F_CUSTOM_2 value is : ${anonydonecustom2}`);
+        anonymizationcompletedusers.push(anonydoneuser);
+        //anonymizationcompletedusers.push(anonydonestatus);
+        //anonymizationcompletedusers.push(anonydonecomments);
+        //anonymizationcompletedusers.push(anonydonecustom2);
+    }
+   return anonymizationcompletedusers;
+    
+}
 async function UpdatedusercategorytoNormal(validationfaileduser) {
     const connection= await connectPpokerops();
     const updateduserresult= await connection.execute(
@@ -618,4 +644,6 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,
     verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
-    getAnonymizationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal};
+    getAnonymizationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal,
+     getAnonymizationCompletedUsers
+    };
