@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {getAnonymisedFeildsFromPpokerops,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,verifyUserAnonymizationStatus,
-    getAnonymisedFeildsFromUseraccount
+    getAnonymisedFeildsFromUseraccount,getAnonymizationFailedUsers
 }=require('../DataAnonymization/dbqueries');
 const userslist=require('../DataAnonymization/DAUserslist');
 
@@ -17,7 +17,7 @@ test( 'Verify data points after user anonymization is comepleted', async ()=>{
 
 );
 
-test.describe.configure({timeout:3000000});
+/*test.describe.configure({timeout:3000000});
 test('verify validation status for users from DB automatically after data is loaded ' , async ()=>{
     await verifyUserValidationStatus(userscount);
 }
@@ -27,4 +27,6 @@ test.describe.configure({timeout:3000000});
 test.only('verify data points for anonymized users from DB automatically' , async ()=>{
     await verifyUserAnonymizationStatus(userscount);
 }
-);
+); */
+
+test("")

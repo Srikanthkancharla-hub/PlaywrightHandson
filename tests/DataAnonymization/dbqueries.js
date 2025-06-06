@@ -7,7 +7,16 @@ const oracledb = require('oracledb');
 const now = new Date();
 
 
-
+async function UpdatedusercategorytoNormal(validationfaileduser) {
+    const connection= await connectPpokerops();
+    const updateduserresult= await connection.execute(
+        `update EZECASH.t_g_biographic set f_category_id='0' where f_account_name_eze= :validationfaileduser`,
+        {validationfaileduser},
+        {autoCommit:true}
+    );
+    console.log(`User category is updated to Normal for user : ${validationfaileduser}`);
+    //return updateduserresult.rows;
+}
 async function verifyUserValidationStatus() {
     const connection= await connectDb();
     const result = await connection.execute(
@@ -315,8 +324,7 @@ async function updateLastAccessedTimeInTanc(accountname,lastActivityTime){
 async function getAnonymizationFailedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(`
-        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed' order by f_modified_time desc
-        fetch first 200 rows only`,
+        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed'  and TRUNC(f_insertion_time)= TRUNC(sysdate)`,
         [],
         {outFormat:oracledb.OUT_FORMAT_OBJECT}
     );
@@ -332,9 +340,10 @@ async function getAnonymizationFailedUsers() {
         for (let i=0;i<result.rows.length;i++){
             const validationfaileduser=result.rows[i].F_ACCOUNT_NAME;
             console.log(`Validation failed user is :${validationfaileduser}`);
-            anonymizationfailedusers.push(validationfaileduser);
             const validationfailedusercomments=result.rows[i].F_COMMENTS;
             console.log(`Validation failed user comments are : ${validationfailedusercomments}`);
+            anonymizationfailedusers.push(validationfaileduser);
+            anonymizationfailedusers.push(validationfailedusercomments);
         }
     }
     
@@ -609,4 +618,4 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,
     verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
-    getAnonymizationFailedUsers,getUserPlayRealStatus};
+    getAnonymizationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal};

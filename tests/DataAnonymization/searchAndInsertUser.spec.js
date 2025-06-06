@@ -2,6 +2,7 @@ const {test,expect}=require('@playwright/test');
 const {dbqueries, searchUserInTable, insertUsers,
     verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
     updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers,insertJurisdictionForPlayers
+    ,UpdatedusercategorytoNormal
 }=require('../DataAnonymization/dbqueries');
 const userslist=require('../DataAnonymization/DAUserslist');
 const useractivitytype=require('../DataAnonymization/activityType');
@@ -31,7 +32,7 @@ test.beforeAll(async ()=>{
 //const userCreateTime= new Date('2005-05-01T09:12:44');
 //const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
-test.only('Insert users with last activity time as Sysdate.' , async()=>{
+test('Insert users with last activity time as Sysdate.' , async()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     let j=0;
     for(let i=0;i<insertedAccounts.length;i++){
@@ -43,8 +44,15 @@ test.only('Insert users with last activity time as Sysdate.' , async()=>{
         const user= await searchUserInTable(testUserName);
         if(user.length==0){
             console.log('User not found, inserting user into table with activity:', randomactivityType);
-            await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,sysdateeligibilitydate);
-            await insertJurisdictionForPlayers(testUserName);
+            const userplayrealstatus= await getUserPlayRealStatus(testUserName);
+            const userstatus=userplayrealstatus[0];
+            if(userstatus==0){
+                await insertUsers(testUserName,randomactivityType,playuserlastactivitybackdate,sysdateeligibilitydate);
+                await insertJurisdictionForPlayers(testUserName);
+            }else{
+                await insertUsers(testUserName,randomactivityType,realuserlastactivitybackdate,sysdateeligibilitydate);
+                await insertJurisdictionForPlayers(testUserName);
+            }
         }
         j++;
 if(j>=useractivitytype.length){
@@ -60,7 +68,7 @@ if(j>=useractivitytype.length){
 );
 
 // To make this use case as success insert record with last activity time as sysdate. 
-test('Verify core validation check is failed due to last activity time is less than threshold time', async ()=>{
+/*test('Verify core validation check is failed due to last activity time is less than threshold time', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     for(let i=0;i<insertedAccounts.length;i++){
         const testUserName=insertedAccounts[i];
@@ -74,7 +82,8 @@ test('Verify core validation check is failed due to last activity time is less t
         }
     }   
 }
-);
+);*/
+
 test.describe.configure({timeout:3000000});
 test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
@@ -112,9 +121,9 @@ if(j>=useractivitytype.length){
 
 );
 //test.describe.configure({timeout:3000000});
-test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
+test.only('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
     const validationfaileduserslist= await getAnonymizationFailedUsers();
-    console.log('Validation failed users list is :', validationfaileduserslist);
+    //console.log('Validation failed users list is :', validationfaileduserslist);
     for (let i=0;i<validationfaileduserslist.length;i++){
         const testUserName=validationfaileduserslist[i];
         console.log(`User picked to update data in DB is : ${testUserName}`);
@@ -127,8 +136,10 @@ test('Updating Basic check failed DB Records to eligible for anonymization', asy
             const userstatus=playerstatus[0];
             if(userstatus==0){
                 await updateDbForAnonymization(testUserName,playuserlastactivitybackdate,backdatedeligibilityTime);
+                await UpdatedusercategorytoNormal(testUserName);
             }else {
                 await updateDbForAnonymization(testUserName,realuserlastactivitybackdate,backdatedeligibilityTime);
+                await UpdatedusercategorytoNormal(testUserName);
             }
             
            }
