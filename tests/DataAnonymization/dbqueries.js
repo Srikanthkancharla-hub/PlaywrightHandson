@@ -30,7 +30,7 @@ WHERE f_status ='Eligible_for_Anonymization'
         custom1: row.F_CUSTOM_1,
         custom2: row.F_CUSTOM_2
     }));
-    return selectedFields
+    return selectedFields;
 }
 async function getAnonymizationCompletedUsers() {
     const connection= await connectDb();
@@ -124,44 +124,6 @@ async function verifyUserValidationStatus() {
     }
     return result.rows;  
 };
-
-async function verifyUserAnonymizationStatus(testuserscount) {
-    const connection= await connectDb();
-    const result = await connection.execute(
-        `select * from t_user_anonymization_data  where TRUNC(f_insertion_time)= TRUNC(sysdate-1)`,
-        [],
-        {outFormat:oracledb.OUT_FORMAT_OBJECT}
-    );
-    console.log('Users count from db output is :', result.rows.length);
-    if(result.rows.length>0){
-        for (let i=0;i<result.rows.length;i++){
-            console.log('users picked to check anonymization status are :',result.rows[i]);
-            const userCommentsInDB= result.rows[i].F_COMMENTS;
-            console.log(`User commnets in DB  is : ${userCommentsInDB}`);
-            const userStatusafteranonymization =result.rows[i].F_STATUS;
-            console.log(`User status in DB is : ${userStatusafteranonymization}`);
-            const custom1InDB = result.rows[i].F_CUSTOM_1;
-            const custom2InDB = result.rows[i].F_CUSTOM_2;
-            //console.log(`F_CUSTOM_2 value in DB after anonymization complete is : ${custom2InDB}`);
-            //const custom1afteranonymization='Anonymization_validation_Completed';
-            const custom2afteranonymization='Anonymization_Complete';
-            const testaccountname=result.rows[i].F_ACCOUNT_NAME;
-            if(custom1InDB===null && custom2InDB===custom2afteranonymization){
-                console.log(`F_CUSTOM_2 value in DB after anonymization complete is : ${custom2InDB}`);
-                await getAnonymisedFeildsFromPpokerops(testaccountname);
-                await getAnonymisedFeildsFromPgauth(testaccountname);
-                await getAnonymisedFeildsFromUseraccount(testaccountname);
-            }
-            else {
-                console.log(`F_CUSTOM_1 value in DB  is : ${custom1InDB}`);
-                console.log(`F_CUSTOM_2 value in DB  is : ${custom2InDB}`);
-                console.log('User are in done with validation.These users will be picked for anonymization in next cron')
-            }
-    }
-
-    }
-};
-
 
 async function insertUsers(accountname,activityType,lastActivityTime,eligibilityTime) {
     const currentDate= new Date();
@@ -380,30 +342,20 @@ async function getValidationFailedUsers() {
         [],
         {outFormat:oracledb.OUT_FORMAT_OBJECT}
     );
-    //console.log('validation failed users are :',result.rows);
-    try{
-    const validationfaileduserscount= result.rows.length;
-    console.log('Validation failed users count is :',validationfaileduserscount);
-    const anonymizationfailedusers=[];
-    if(validationfaileduserscount==0){
-        console.log(`Validation failed users count is Zer0`);
-    }
-    else {
-        for (let i=0;i<result.rows.length;i++){
-            const validationfaileduser=result.rows[i].F_ACCOUNT_NAME;
-            console.log(`Validation failed user is :${validationfaileduser}`);
-            const validationfailedusercomments=result.rows[i].F_COMMENTS;
-            console.log(`Validation failed user comments are : ${validationfailedusercomments}`);
-            anonymizationfailedusers.push(validationfaileduser);
-            anonymizationfailedusers.push(validationfailedusercomments);
-        }
-    }
+    var selectedFields = result.rows.map(row => ({
+        accountName: row.F_ACCOUNT_NAME,
+        activityType: row.F_ACTIVITY_TYPE,
+        lastActivityTime: row.F_LAST_ACTIVITY_TIME,
+        eligibilityTime: row.F_ELIGIBILTY_TIME,
+        status: row.F_STATUS,
+        comments: row.F_COMMENTS,
+        insertionTime: row.F_INSERTION_TIME,
+        modifiedTime: row.F_MODIFIED_TIME,
+        custom1: row.F_CUSTOM_1,
+        custom2: row.F_CUSTOM_2
+    }));
+    return selectedFields;
     
-    return anonymizationfailedusers;
-}
-catch(Error){
-console.log('Error in execution is :',Error);
-}
 };
 async function updateDbForAnonymization(accountname,lastActivityTime,eligibilityTime) {
     const connection= await connectDb();

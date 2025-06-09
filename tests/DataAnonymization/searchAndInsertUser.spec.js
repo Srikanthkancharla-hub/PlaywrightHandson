@@ -65,7 +65,7 @@ if(j>=useractivitytype.length){
 }
 );
 
-test("Insert users with sysdate to make basic check fail ", async()=>{
+test("Insert users with last activity time as sysdate to make basic check fail ", async()=>{
     const insertedAccounts=await insertUsersNotInTableFromTANC();
     let j=0;
      for (let i=0;i<insertedAccounts.length;i++){
@@ -92,7 +92,7 @@ test("Insert users with sysdate to make basic check fail ", async()=>{
 });
 
 test.describe.configure({timeout:3000000});
-test.only('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
+test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     
         let j=0;
@@ -130,7 +130,7 @@ if(j>=useractivitytype.length){
 );
 //test.describe.configure({timeout:3000000});
 test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
-    const validationfaileduserslist= await getAnonymizationFailedUsers();
+    const validationfaileduserslist= await getValidationFailedUsers();
     //console.log('Validation failed users list is :', validationfaileduserslist);
     for (let i=0;i<validationfaileduserslist.length;i++){
         const testUserName=validationfaileduserslist[i];

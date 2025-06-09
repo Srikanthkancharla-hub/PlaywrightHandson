@@ -22,21 +22,42 @@ test("Verify  user validation status in DB", async()=>{
     const eligibleusers= await getElibleForAnonymizationPlayersFromDB();
     for (var user of eligibleusers){
         const accountname=user.accountName;
-        const comments=user.comments;
-        //console.log('User eligible for anonymization is:',accountname);
-        console.log(`user :${accountname} has comments :${comments}`);
-        if (comments.toUpperCase().includes("FAILED")){
-            console.log("Validation is failed for user :" , accountname);
-            console.log(`Validation Failed user comments are :${comments}`);
-            console.log(`Validation failed user status is :${user.status}`);
+        if(user.comments.toUpperCase().includes("VALIDATION")){
+            console.log(` User ${accountname} validation status is :${user.status}`);
+            console.log(`User Validation comments are :${user.comments}`);
+            console.log(`User Validation eligibility time is : ${user.eligibilityTime}`);
+            console.log(`User Validation CUSTOM_1 value is :${user.custom1}`);
+            console.log(`User Validation CUSTOM_2 value is : ${user.custom2}`);
         }
         else {
-            console.log("Validation is success for user :" , accountname);
-            console.log(`Validation success user comments are :${comments}`);
-            console.log(`Validation success user status is :${user.status}`);
-
+            if(user.comments.toUpperCase().includes("initiated")){
+                console.log(`User is :${accountname} validation is initiated `)
+            }
+            console.log(`User is :${accountname} yet to pick for validation`);
         }
     }
-
 });
 
+test("Verify Basic check failed users data points in db", async()=>{
+    const failedusers= await getValidationFailedUsers();
+    for (const user of failedusers){
+        const accountname=user.accountName;
+        const userstatus=user.status;
+        const usercomments=user.comments;
+        if((usercomments.toUpperCase().includes("Core:Validation-Failed"))
+        ||(usercomments.toUpperCase().includes("Core Validation Failed"))){
+            console.log(` user ${accountname} validation is failed with Basic check and comments are :${usercomments}`);
+            console.log(`Basic validation failed user status is : ${userstatus}`);
+            console.log(`Basic validation failed user eligibility time is  : ${user.eligibilityTime}`);
+            console.log(`Basic validation failed user CUSTOM_1 is : ${user.custom1}`);
+            console.log(`Basic validation failed user CUSTOM_2 is :${user.custom2}`);
+        }else {
+            console.log(` user ${accountname} validation is failed and comments are :${usercomments}`);
+            console.log(`Basic validation failed user status is : ${userstatus}`);
+            console.log(`Basic validation failed user eligibility time is  : ${user.eligibilityTime}`);
+            console.log(`Basic validation failed user CUSTOM_1 is : ${user.custom1}`);
+            console.log(`Basic validation failed user CUSTOM_2 is :${user.custom2}`);
+        }
+
+    }
+});
