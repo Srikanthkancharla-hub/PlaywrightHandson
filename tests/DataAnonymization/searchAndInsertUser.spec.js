@@ -7,6 +7,7 @@ const {dbqueries, searchUserInTable, insertUsers,
 const useractivitytype=require('../DataAnonymization/activityType');
 const { connectDb } = require('../../Utils/dbconnection');
 const {calenderRollingYearsDate}=require('../DataAnonymization/countrylabelretension');
+const { Console } = require('console');
 
 //const userlastActivityTime = new Date('2005-05-01T09:12:44');
 
@@ -62,25 +63,33 @@ if(j>=useractivitytype.length){
     }
 }
 }
-
 );
 
-// To make this use case as success insert record with last activity time as sysdate. 
-/*test('Verify core validation check is failed due to last activity time is less than threshold time', async ()=>{
-    const insertedAccounts = await insertUsersNotInTableFromTANC();
-    for(let i=0;i<insertedAccounts.length;i++){
+test("Insert users with sysdate to make basic check fail ", async()=>{
+    const insertedAccounts=await insertUsersNotInTableFromTANC();
+    let j=0;
+     for (let i=0;i<insertedAccounts.length;i++){
         const testUserName=insertedAccounts[i];
-        console.log(`user picked to verify status in db is ${testUserName}`);
+        const randomactivityType=useractivitytype[j];
         try{
-            await verifyStatusInDb(testUserName);
+            const searchuser= await searchUserInTable(testUserName);
+            if(searchuser.length==0){
+                await insertUsers(testUserName,randomactivityType,sysdateeligibilitydate,backdatedeligibilityTime);
+                console.log(`User ${testUserName} is inserted with last activity time as : ${sysdateeligibilitydate}`);
+            }
+            else{
+                console.log(`User ${testUserName} is exist in the table`);
+            }
+            j++;
+            if(j>=useractivitytype.length){
+                j=0;
+            }
+        }catch(Error){
+            console.log("Error is :",Error);
+        }
+     }
 
-        }
-        catch(error){
-            console.error('Error is :', error);
-        }
-    }   
-}
-);*/
+});
 
 test.describe.configure({timeout:3000000});
 test.only('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
