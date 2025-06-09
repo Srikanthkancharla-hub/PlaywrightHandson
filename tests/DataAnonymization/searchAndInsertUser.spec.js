@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {dbqueries, searchUserInTable, insertUsers,
     verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
-    updateDbForAnonymization,insertUsersNotInTableFromTANC,getAnonymizationFailedUsers,insertJurisdictionForPlayers
+    updateDbForAnonymization,insertUsersNotInTableFromTANC,getValidationFailedUsers,insertJurisdictionForPlayers
     ,UpdatedusercategorytoNormal
 }=require('../DataAnonymization/dbqueries');
 const useractivitytype=require('../DataAnonymization/activityType');

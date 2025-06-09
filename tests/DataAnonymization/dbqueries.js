@@ -5,6 +5,7 @@ const oracledb = require('oracledb');
 
 
 const now = new Date();
+
 async function getElibleForAnonymizationPlayersFromDB(){
     const connection= await connectDb();
     const result= await connection.execute(
@@ -372,7 +373,7 @@ async function updateLastAccessedTimeInTanc(accountname,lastActivityTime){
     console.log(`User ${accountname} updated with f_last_accessed in T_LAST_LOGIN_SESSIONS as ${lastActivityTime}`);
     await connection.close();
 };
-async function getAnonymizationFailedUsers() {
+async function getValidationFailedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(`
         select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed'  and TRUNC(f_insertion_time)= TRUNC(sysdate)`,
@@ -669,6 +670,6 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,
     verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
-    getAnonymizationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal,
+    getValidationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal,
      getAnonymizationCompletedUsers ,getElibleForAnonymizationPlayersFromDB
     };

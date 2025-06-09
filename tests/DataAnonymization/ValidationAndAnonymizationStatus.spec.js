@@ -1,7 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const {getAnonymisedFeildsFromPpokerops,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,verifyUserAnonymizationStatus,
-    getAnonymisedFeildsFromUseraccount,getAnonymizationFailedUsers,getAnonymizationCompletedUsers,
+    getAnonymisedFeildsFromUseraccount,getValidationFailedUsers,getAnonymizationCompletedUsers,
     getElibleForAnonymizationPlayersFromDB
 }=require('./dbqueries');
 
@@ -18,7 +18,7 @@ test( 'Verify data points after user anonymization is comepleted', async ()=>{
 }
 );
 
-test.only("Verify  user validation status in DB", async()=>{
+test("Verify  user validation status in DB", async()=>{
     const eligibleusers= await getElibleForAnonymizationPlayersFromDB();
     for (var user of eligibleusers){
         const accountname=user.accountName;
