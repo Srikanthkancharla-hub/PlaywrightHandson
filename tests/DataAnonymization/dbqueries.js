@@ -168,7 +168,7 @@ tanc.f_account_name_casino=tg.f_account_name_eze
 join t_jurisdiction tj on 
 tj.f_account_name=tanc.f_account_name_casino
 where tanc.f_account_name_casino not in (select f_account_name from useraccount.t_user_anonymization_data) 
-and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0  and tg.f_country='MT'
+and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0  and tg.f_country='AT'
 ---and tj.f_jurisdiction='GBR'
 ---and tg.f_category_id not in ('25','24','17','20')
 FETCH FIRST 10 ROWS ONLY`,
