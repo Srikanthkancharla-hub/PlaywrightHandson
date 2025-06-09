@@ -5,7 +5,32 @@ const oracledb = require('oracledb');
 
 
 const now = new Date();
-
+async function getElibleForAnonymizationPlayersFromDB(){
+    const connection= await connectDb();
+    const result= await connection.execute(
+        `SELECT *
+FROM t_user_anonymization_data
+WHERE f_status ='Eligible_for_Anonymization'
+  AND TRUNC(f_insertion_time) = TRUNC(SYSDATE)
+  FETCH FIRST 50 rows only`,
+  [],
+  {outFormat:oracledb.OUT_FORMAT_OBJECT}
+    );
+    //console.log('Users eligible for anonymization from Db are :',result.rows);
+    var selectedFields = result.rows.map(row => ({
+        accountName: row.F_ACCOUNT_NAME,
+        activityType: row.F_ACTIVITY_TYPE,
+        lastActivityTime: row.F_LAST_ACTIVITY_TIME,
+        eligibilityTime: row.F_ELIGIBILTY_TIME,
+        status: row.F_STATUS,
+        comments: row.F_COMMENTS,
+        insertionTime: row.F_INSERTION_TIME,
+        modifiedTime: row.F_MODIFIED_TIME,
+        custom1: row.F_CUSTOM_1,
+        custom2: row.F_CUSTOM_2
+    }));
+    return selectedFields
+}
 async function getAnonymizationCompletedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(
@@ -645,5 +670,5 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
     getAnonymizationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal,
-     getAnonymizationCompletedUsers
+     getAnonymizationCompletedUsers ,getElibleForAnonymizationPlayersFromDB
     };

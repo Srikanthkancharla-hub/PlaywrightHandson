@@ -30,7 +30,7 @@ test.beforeAll(async ()=>{
 //const userCreateTime= new Date('2005-05-01T09:12:44');
 //const usereligibilityTime= new Date('2024-05-01T09:12:44')
 
-test.only('Insert users with Eligibility time  as Sysdate.' , async()=>{
+test('Insert users with Eligibility time  as Sysdate.' , async()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     let j=0;
     for(let i=0;i<insertedAccounts.length;i++){
@@ -83,7 +83,7 @@ if(j>=useractivitytype.length){
 );*/
 
 test.describe.configure({timeout:3000000});
-test('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
+test.only('Insert users not in T_USER_ANONYMIZATION_DATA from TANC for Anonymization  ', async ()=>{
     const insertedAccounts = await insertUsersNotInTableFromTANC();
     
         let j=0;

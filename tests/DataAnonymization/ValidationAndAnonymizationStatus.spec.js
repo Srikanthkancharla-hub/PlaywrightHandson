@@ -1,7 +1,8 @@
 const {test,expect}=require('@playwright/test');
 const {getAnonymisedFeildsFromPpokerops,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,verifyUserAnonymizationStatus,
-    getAnonymisedFeildsFromUseraccount,getAnonymizationFailedUsers,getAnonymizationCompletedUsers
+    getAnonymisedFeildsFromUseraccount,getAnonymizationFailedUsers,getAnonymizationCompletedUsers,
+    getElibleForAnonymizationPlayersFromDB
 }=require('./dbqueries');
 
 test.describe.configure({retries:1,timeout:300000});
@@ -17,4 +18,24 @@ test( 'Verify data points after user anonymization is comepleted', async ()=>{
 }
 );
 
+test.only("Verify  user validation status in DB", async()=>{
+    const eligibleusers= await getElibleForAnonymizationPlayersFromDB();
+    for (var user of eligibleusers){
+        const accountname=user.accountName;
+        const comments=user.comments;
+        //console.log('User eligible for anonymization is:',accountname);
+        console.log(`user :${accountname} has comments :${comments}`);
+        if (comments.toUpperCase().includes("FAILED")){
+            console.log("Validation is failed for user :" , accountname);
+            console.log(`Validation Failed user comments are :${comments}`);
+            console.log(`Validation failed user status is :${user.status}`);
+        }
+        else {
+            console.log("Validation is success for user :" , accountname);
+            console.log(`Validation success user comments are :${comments}`);
+            console.log(`Validation success user status is :${user.status}`);
 
+        }
+    }
+
+});
