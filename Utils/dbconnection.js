@@ -9,8 +9,9 @@ async function connectDb(){
             connectString: '10.1.182.172:1521/real'
         });
         console.log('Connected to Db ');
+       // await connection.close();
         return connection;
-        //await connection.close();
+  
 
     }
     catch(error){
