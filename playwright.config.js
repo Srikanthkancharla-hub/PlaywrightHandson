@@ -24,7 +24,7 @@ module.exports = defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     /*['list']*/
-    ['html'], ['allure-playwright',{outputFolder:'playwright-report'}]],
+    ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     screenshot:'on',
