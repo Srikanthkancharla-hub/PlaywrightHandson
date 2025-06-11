@@ -3,7 +3,7 @@ const {searchUserInTable, insertUsers,
     updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
     updateDbForAnonymization,insertUsersNotInTableFromTANC,getValidationFailedUsers,insertJurisdictionForPlayers
     ,UpdatedusercategorytoNormal
-}=require('../../DB Queries/com.qa.DataAnonymisation/dbqueries');
+}=require('../../DatabaseQueries/com.qa.DataAnonymisation/dbqueries');
 const useractivitytype=require('../../Utils/DataAnonymisationUtils/activityType');
 require('../../Utils/dbconnection');
 const {calenderRollingYearsDate}=require('../../Utils/DataAnonymisationUtils/dates');
