@@ -3,7 +3,7 @@ const {getAnonymisedFeildsFromPpokerops,
     getAnonymisedFeildsFromPgauth,
     getAnonymisedFeildsFromUseraccount,getValidationFailedUsers,getAnonymizationCompletedUsers,
     getElibleForAnonymizationPlayersFromDB
-}=require('./dbqueries');
+}=require('../../DB Queries/com.qa.DataAnonymisation/dbqueries');
 const { diff } = require('util');
 
 test.describe.configure({retries:1,timeout:300000});

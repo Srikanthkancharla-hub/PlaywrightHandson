@@ -1,12 +1,12 @@
 const {test,expect}=require('@playwright/test');
-const {dbqueries, searchUserInTable, insertUsers,
-    verifyStatusInDb,updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
+const {searchUserInTable, insertUsers,
+    updateCreateTimeInTanc,updateLastAccessedTimeInTanc,getUserPlayRealStatus,
     updateDbForAnonymization,insertUsersNotInTableFromTANC,getValidationFailedUsers,insertJurisdictionForPlayers
     ,UpdatedusercategorytoNormal
-}=require('../DataAnonymization/dbqueries');
-const useractivitytype=require('../DataAnonymization/activityType');
-const { connectDb } = require('../../Utils/dbconnection');
-const {calenderRollingYearsDate}=require('../DataAnonymization/countrylabelretension');
+}=require('../../DB Queries/com.qa.DataAnonymisation/dbqueries');
+const useractivitytype=require('../../Utils/DataAnonymisationUtils/activityType');
+require('../../Utils/dbconnection');
+const {calenderRollingYearsDate}=require('../../Utils/DataAnonymisationUtils/dates');
 const { Console } = require('console');
 const oracledb = require('oracledb');
 

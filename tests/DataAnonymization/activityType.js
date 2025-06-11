@@ -1,9 +1,0 @@
-module.exports=[
-    'Bet',
-    'Withdrwal',
-    'Deposit',
-    'Win',
-    'closed',
-    'PermanentlyClosed',
-    'closedInactive'
-];
