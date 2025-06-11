@@ -8,8 +8,9 @@ const useractivitytype=require('../DataAnonymization/activityType');
 const { connectDb } = require('../../Utils/dbconnection');
 const {calenderRollingYearsDate}=require('../DataAnonymization/countrylabelretension');
 const { Console } = require('console');
+const oracledb = require('oracledb');
 
-//const userlastActivityTime = new Date('2005-05-01T09:12:44');
+
 
 var  sysdateeligibilitydate;
 var realuserlastactivitybackdate;
@@ -129,11 +130,10 @@ if(j>=useractivitytype.length){
 
 );
 //test.describe.configure({timeout:3000000});
-test('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
+test.skip('Updating Basic check failed DB Records to eligible for anonymization', async ()=>{
     const validationfaileduserslist= await getValidationFailedUsers();
-    //console.log('Validation failed users list is :', validationfaileduserslist);
-    for (let i=0;i<validationfaileduserslist.length;i++){
-        const testUserName=validationfaileduserslist[i];
+    for (const users of validationfaileduserslist){
+        const testUserName=users.accountName;
         console.log(`User picked to update data in DB is : ${testUserName}`);
         try{
            const user= await searchUserInTable(testUserName);

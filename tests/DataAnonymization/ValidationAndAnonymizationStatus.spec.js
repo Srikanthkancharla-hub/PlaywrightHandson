@@ -1,9 +1,10 @@
-const {test,expect}=require('@playwright/test');
+const {test}=require('@playwright/test');
 const {getAnonymisedFeildsFromPpokerops,
-    getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,verifyUserAnonymizationStatus,
+    getAnonymisedFeildsFromPgauth,
     getAnonymisedFeildsFromUseraccount,getValidationFailedUsers,getAnonymizationCompletedUsers,
     getElibleForAnonymizationPlayersFromDB
 }=require('./dbqueries');
+const { diff } = require('util');
 
 test.describe.configure({retries:1,timeout:300000});
 test( 'Verify data points after user anonymization is comepleted', async ()=>{
@@ -44,8 +45,7 @@ test("Verify Basic check failed users data points in db", async()=>{
         const accountname=user.accountName;
         const userstatus=user.status;
         const usercomments=user.comments;
-        if((usercomments.toUpperCase().includes("Core:Validation-Failed"))
-        ||(usercomments.toUpperCase().includes("Core Validation Failed"))){
+        if((usercomments.toUpperCase().includes("Failed"))){
             console.log(` user ${accountname} validation is failed with Basic check and comments are :${usercomments}`);
             console.log(`Basic validation failed user status is : ${userstatus}`);
             console.log(`Basic validation failed user eligibility time is  : ${user.eligibilityTime}`);
@@ -53,10 +53,13 @@ test("Verify Basic check failed users data points in db", async()=>{
             console.log(`Basic validation failed user CUSTOM_2 is :${user.custom2}`);
         }else {
             console.log(` user ${accountname} validation is failed and comments are :${usercomments}`);
-            console.log(`Basic validation failed user status is : ${userstatus}`);
-            console.log(`Basic validation failed user eligibility time is  : ${user.eligibilityTime}`);
-            console.log(`Basic validation failed user CUSTOM_1 is : ${user.custom1}`);
-            console.log(`Basic validation failed user CUSTOM_2 is :${user.custom2}`);
+            console.log(` validation failed user status is : ${userstatus}`);
+            console.log(` validation failed user eligibility time is  : ${user.eligibilityTime}`);
+            console.log(` validation failed user CUSTOM_1 is : ${user.custom1}`);
+            console.log(` validation failed user CUSTOM_2 is :${user.custom2}`);
+            const failedTeams = [usercomments.matchAll(/(\w+)\s*Failed[-:](\w+)/g)].map(match => match[2]);
+            console.log("Validation Failed Teams are :" ,failedTeams);
+
         }
 
     }

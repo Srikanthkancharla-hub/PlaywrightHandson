@@ -35,7 +35,7 @@ WHERE f_status ='Eligible_for_Anonymization'
 async function getAnonymizationCompletedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(
-        `select * from t_user_anonymization_data where f_status='Anonymization_Complete'  and TRUNC(f_insertion_time)= TRUNC(sysdate-1)
+        `select * from t_user_anonymization_data where f_status='Anonymization_Complete'  and TRUNC(f_insertion_time)= TRUNC(sysdate)
         fetch first 20 rows only`,
         [],
         {outFormat:oracledb.OUT_FORMAT_OBJECT}
@@ -159,6 +159,7 @@ where tanc.f_account_name_casino not in (select f_account_name from useraccount.
 and tanc.f_account_name_casino like 'bz_%' and tanc.f_account_balance=0  and tg.f_country='AT'
 ---and tj.f_jurisdiction='GBR'
 ---and tg.f_category_id not in ('25','24','17','20')
+ORDER BY DBMS_RANDOM.VALUE
 FETCH FIRST 10 ROWS ONLY`,
  [],
  {outFormat:oracledb.OUT_FORMAT_OBJECT}
@@ -172,7 +173,10 @@ FETCH FIRST 10 ROWS ONLY`,
         accountsToInsert.push(anamefromtancresult);
         
     }
+    await connection.rollback();
+    await connection.close();
     return accountsToInsert;
+
 }
 
 async function searchUserInTable(accountname) {
@@ -338,7 +342,8 @@ async function updateLastAccessedTimeInTanc(accountname,lastActivityTime){
 async function getValidationFailedUsers() {
     const connection= await connectDb();
     const result= await connection.execute(`
-        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed'  and TRUNC(f_insertion_time)= TRUNC(sysdate)`,
+        select * from t_user_anonymization_data where f_status='Eligibility_Validation_Failed' order by f_insertion_time desc
+        fetch first 50 rows only`,
         [],
         {outFormat:oracledb.OUT_FORMAT_OBJECT}
     );
@@ -620,7 +625,7 @@ module.exports={insertUsers,searchUserInTable,verifyStatusInDb,
     updateDbForAnonymization,getAnonymisedFeildsFromPpokerops,
     getAnonymisedFeildsFromUseraccount,
     getAnonymisedFeildsFromPgauth,verifyUserValidationStatus,
-    verifyUserAnonymizationStatus,updateCreatetimeInAllTables,
+    verifyUserValidationStatus,updateCreatetimeInAllTables,
     insertUsersNotInTableFromTANC,insertJurisdictionForPlayers,
     getValidationFailedUsers,getUserPlayRealStatus,UpdatedusercategorytoNormal,
      getAnonymizationCompletedUsers ,getElibleForAnonymizationPlayersFromDB
