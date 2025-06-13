@@ -57,8 +57,8 @@ test("Verify Basic check failed users data points in db", async()=>{
             console.log(` validation failed user eligibility time is  : ${user.eligibilityTime}`);
             console.log(` validation failed user CUSTOM_1 is : ${user.custom1}`);
             console.log(` validation failed user CUSTOM_2 is :${user.custom2}`);
-            const failedTeams = [usercomments.matchAll(/(\w+)\s*Failed[-:](\w+)/g)].map(match => match[2]);
-            console.log("Validation Failed Teams are :" ,failedTeams);
+            //const failedTeams = [usercomments.matchAll(/(\w+)\s*Failed[-:](\w+)/g)].map(match => match[2]);
+            //console.log("Validation Failed Teams are :" ,failedTeams);
 
         }
 
